@@ -1,7 +1,7 @@
 <?php
 
 
-class RegisterResponseDto
+class UserResponseDto
 {
     public $id;
     public $name;
@@ -14,6 +14,14 @@ class RegisterResponseDto
         $this->email = $email;
     }
 
+    public function toArray() : array
+    {
+        return  [
+            "id" => $this->id,
+            "name" => $this->name,
+            "email" => $this->email
+        ];
+    }
 
 
 }

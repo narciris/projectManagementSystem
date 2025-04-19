@@ -6,7 +6,7 @@
 require_once __DIR__ . '/../core/Connexion.php';
 require_once __DIR__ . '/../core/Model.php';
 require_once  __DIR__ . '/../Dtos/RegisterRequestDto.php';
-require_once __DIR__ . '/../Dtos/ResponseDto/RegisterResponseDto.php';
+require_once __DIR__ . '/../Dtos/ResponseDto/UserResponseDto.php';
 
 class User extends Model
 {
@@ -14,7 +14,7 @@ class User extends Model
     protected $model = 'users';
 
 
-    public function registerUser(RegisterRequestDto $requestDto) : RegisterResponseDto
+    public function registerUser(RegisterRequestDto $requestDto) : UserResponseDto
     {
 
 
@@ -42,7 +42,7 @@ class User extends Model
 
          $user = $this->findById($userID);
 
-        return new RegisterResponseDto($user['id'], $user['name'], $user['email']);
+        return new UserResponseDto($user['id'], $user['name'], $user['email']);
 
      }
 

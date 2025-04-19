@@ -1,6 +1,7 @@
 <?php
+//import
 require_once  __DIR__ . '/../Dtos/RegisterRequestDto.php';
-require_once __DIR__ . '/../Dtos/ResponseDto/RegisterResponseDto.php';
+require_once __DIR__ . '/../Dtos/ResponseDto/UserResponseDto.php';
 class UserController extends Controller
 {
 
@@ -21,21 +22,27 @@ class UserController extends Controller
 
     }
 
-    public function show()
+    public function show() : UserResponseDto
     {
-        $id = (isset($_GET['id'])) ? $_GET['id'] : false;
-        if($id){
-            $model = $this->loadModel('User');
-            $user = $model->findById($id);
+        try{
+            $id = (isset($_GET['id'])) ? $_GET['id'] : false;
+            if($id){
+                $model = $this->loadModel('User');
+                $user = $model->findById($id);
 
-            if($user){
-                $this->jsonSuccess($user);
-            } else{
-                $this->jsonError('Error');
+                if($user){
+                    $userDto = new  UserResponseDto($user['id'],$user['name'],$user['email']);
+                    $this->jsonSuccess($userDto->toArray());
+                } else{
+                    $this->jsonError('Error');
+                }
+            } else {
+                $this->jsonError('Error: id no proporcionado');
             }
-        } else {
-            $this->jsonError('Error: id no proporcionado');
+        } catch (Exception $e){
+            $this->jsonError($e->getCode(), $e->getMessage());
         }
+
     }
 
     public function register()
@@ -50,7 +57,7 @@ class UserController extends Controller
             $result = $userModel->registerUser($dto);
 
             header('Content-Type: application/json');
-            if($result instanceof  RegisterResponseDto){
+            if($result instanceof  UserResponseDto){
                 $this->jsonSuccess($result);
             } else{
                 $this->jsonError($result);

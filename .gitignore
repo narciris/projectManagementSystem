@@ -1,0 +1,26 @@
+# Ignora directorios del editor
+.idea/
+.vscode/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Cache de Composer
+/vendor/
+
+# Archivos temporales
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Entornos locales
+.env
+
+# Archivos de PHPUnit
+.phpunit.result.cache
+
+# Base de datos local
+*.sqlite
+*.sqlite3
