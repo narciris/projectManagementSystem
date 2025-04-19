@@ -13,12 +13,11 @@
     }
 
 
-
-    public function findAll($model)
+    public function findAll()
     {
 
         try{
-            $stmt = $this->db->query('SELECT * FROM {$this->model}');
+            $stmt = $this->db->query("SELECT * FROM {$this->model}");
             $stmt->execute();
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }catch (PDOException $e){
@@ -31,8 +30,8 @@
     public function findById($id)
     {
         try {
-            $stmt = $this->db->prepare('SELECT * FROM {$this->model} WHERE id = :id');
-            $stmt->bindParama(':id',$id);
+            $stmt = $this->db->prepare("SELECT * FROM {$this->model} WHERE id = :id");
+            $stmt->bindParam(':id',$id);
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -49,6 +48,8 @@
           $placeholders = '';
           $values = [];
 
+            var_dump($data);
+
           foreach ( $data as $key => $value ) {
               $columns .= "$key, ";
               $placeholders .= ":$key, ";
@@ -60,16 +61,21 @@
             $placeholders = rtrim($placeholders, ', ');
 
             $sql = "INSERT INTO {$this->model} ({$columns}) VALUES ({$placeholders})";
+            var_dump($sql);
+
             $stmt = $this->db->prepare($sql);
 
             foreach ($values as $key => $value){
-                $stmt->bindValue(":$key", $value);
+                $stmt->bindValue("$key", $value);
             }
           $stmt->execute();
 
-            return "Registro guardado";
+            return $this->db->lastInsertId();
+
+
 
         }catch (PDOException $e){
+            var_dump($e->getMessage());
             return $e->getMessage();
         }
     }
@@ -95,7 +101,7 @@
 
             foreach ($data as $key => $value){
                 $fields .= "$key = :$key, ";
-                $values[":$key"] = $value;
+                $values["$key"] = $value;
             }
 
             $fields = rtrim($fields, ', ');
@@ -104,7 +110,7 @@
             $stmt = $this->db->prepare($sql);
 
             foreach ($values as $key => $value){
-                $stmt->bindValue(":$key", $value);
+                $stmt->bindValue("$key", $value);
             }
 
             $stmt->bindValue(':id',$id);
@@ -112,6 +118,7 @@
             $stmt->execute();
             return "registro actualizado";
         }catch (PDOException $e){
+
             return $e->getMessage();
         }
     }

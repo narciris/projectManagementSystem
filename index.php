@@ -32,8 +32,8 @@ if(file_exists("controllers/$c.php")) {
 
         }
     } else{
-        print 'method not found';
+        echo json_encode(['error' => 'Method not found']);
     }
 } else{
-    print 'controller not found';
+    echo json_encode(['error' => 'Controller not found']);
 }

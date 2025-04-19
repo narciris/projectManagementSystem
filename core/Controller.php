@@ -18,17 +18,33 @@ class Controller
         }
     }
 
-    public function loadView($view, $data = array()){
+    public function jsonError($message, $status = 400)
+    {
+       $this->jsonError([
+           'status' => 'error',
+           'status_code' => $status,
+           'message' => 'error al realizar la operacion',
+           "error" => $message
+       ], $status);
+    }
 
-        extract($data);
-        $viewFile = 'views/' . $view . '.php';
-        if(file_exists($viewFile)){
-            require_once $viewFile;
+    public function jsonResponse($data, $status = 200){
+        header('Content-Type: application/json');
+        http_response_code($status);
+        echo json_encode($data, JSON_PRETTY_PRINT);
+        exit();
 
-        }else {
-            die(" la vista $view no existe");
-        }
+    }
 
+    public function jsonSuccess($data, $status = 200)
+    {
+       $this->jsonResponse([
+           'status' => 'success',
+           'status_code' => $status,
+           'message' => 'Operacion realizada con exito',
+           'data' => $data,
+
+       ], $status);
     }
 
     public function render($location)
