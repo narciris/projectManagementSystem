@@ -27,21 +27,30 @@
 
     }
 
-    public function findById($id)
-    {
-        try {
-            $stmt = $this->db->prepare("SELECT * FROM {$this->model} WHERE id = :id");
-            $stmt->bindParam(':id',$id);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return $e->getMessage();
-        }
+     public function findById($id)
+     {
+         try {
+             $stmt = $this->db->prepare("SELECT * FROM {$this->model} WHERE id = :id");
+             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+             $stmt->execute();
+
+             $user = $stmt->fetch(PDO::FETCH_ASSOC);
+             if (!$user) {
+                 throw new Exception("Usuario no encontrado", 404);
+             }
+             return $user;
+
+         } catch (PDOException $e) {
+             throw new Exception("Error de base de datos: " . $e->getMessage(), 500);
+         } catch (Exception $e){
+             throw $e;
+         } catch (RuntimeException $e){
+             throw new Exception("error en el tismpo de ejecucion",$e->getMessage(), $e->getCode());
+         }
+     }
 
 
-    }
-
-    public function save($data)
+     public function save($data)
     {
         try {
           $columns = '';

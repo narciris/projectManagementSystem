@@ -29,7 +29,7 @@ class AuthController extends Controller
             exit();
 
         }catch (Exception $e){
-           $this->jsonError($e->getCode(), $e->getMessage());
+           $this->jsonError($e->getMessage(),$e->getCode());
             return new TokenResponseDto("error",["message",$e->getMessage() ]);
         }
     }

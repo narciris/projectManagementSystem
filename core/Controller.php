@@ -20,7 +20,7 @@ class Controller
 
     public function jsonError($message, $status = 400)
     {
-       $this->jsonError([
+       $this->jsonResponse([
            'status' => 'error',
            'status_code' => $status,
            'message' => 'error al realizar la operacion',
