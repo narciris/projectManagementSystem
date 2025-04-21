@@ -36,7 +36,7 @@
 
              $user = $stmt->fetch(PDO::FETCH_ASSOC);
              if (!$user) {
-                 throw new Exception("Usuario no encontrado", 404);
+                 throw new Exception("Usuario con ID {$id} no encontrado", 404);
              }
              return $user;
 
@@ -70,7 +70,7 @@
             $placeholders = rtrim($placeholders, ', ');
 
             $sql = "INSERT INTO {$this->model} ({$columns}) VALUES ({$placeholders})";
-            var_dump($sql);
+//            var_dump($sql);
 
             $stmt = $this->db->prepare($sql);
 
@@ -84,7 +84,7 @@
 
 
         }catch (PDOException $e){
-            var_dump($e->getMessage());
+//            var_dump($e->getMessage());
             return $e->getMessage();
         }
     }
@@ -92,13 +92,27 @@
     public function delete($id)
     {
         try {
+            if(empty($id)){
+                throw new Exception("el id no puede estar vacio");
+            }
             $sql = "DELETE FROM {$this->model} WHERE id = :id";
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id',$id);
-            $stmt->execute();
-            return "Registro eliminado";
+            $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+             $result = $stmt->execute();
+            $rowCount = $stmt->rowCount();
+            if(  $result &&$rowCount> 0){
+                return true;
+            } else if ($result){
+                return false;
+            } else{
+                throw new PDOException("error al eliminar registro");
+            }
         }catch (PDOException $e){
-            return $e->getMessage();
+            error_log("error en el metodo delete", $e->getCode());
+            throw $e;
+        }catch (InvalidArgumentException $e){
+            error_log("argumento invaliden metodo delete", $e->getMessage());
+            throw $e;
         }
     }
     public function findByOne($one, $value)

@@ -31,7 +31,7 @@ class UserController extends Controller
                foreach ($users as $userDto){
                    $response [] = $userDto->toArray();
                }
-               $this->jsonResponse($response);
+               $this->jsonSuccess($response);
            }
 
            $this->jsonSuccess($response);
@@ -80,6 +80,36 @@ class UserController extends Controller
             $this->jsonError($e->getMessage(),400);
         }
 
+
+    }
+
+
+    public function delete($id) {
+        try {
+            $result = $this->userService->deleteUser($id);
+
+            $this->jsonSuccess([
+                'message' => 'Usuario eliminado correctamente',
+                'id' => $id
+            ]);
+        } catch (Exceptions\ResourceNotFoundException $e) {
+            $this->jsonError($e->getMessage(), 404);
+        } catch (InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 400);
+        } catch (Exceptions\DataAccessException $e) {
+            $this->jsonError('Error al acceder a la base de datos', 500);
+            error_log($e->getMessage());
+        } catch (Exception $e) {
+            $this->jsonError('Error en el servicio', 500);
+            error_log($e->getMessage());
+        } catch (Exception $e) {
+            $this->jsonError('Error interno del servidor', 500);
+            error_log("Error inesperado en delete: " . $e->getMessage());
+        }
+    }
+
+    public function update()
+    {
 
     }
 

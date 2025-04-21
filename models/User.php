@@ -46,6 +46,25 @@ class User extends Model
 
      }
 
+    public function findUserById($id)
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT * FROM users WHERE id = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$user) {
+                throw new Exception("Usuario con ID {$id} no encontrado", 404);
+            }
+            return $user;
+
+        } catch (PDOException $e) {
+            throw new Exception("Error en la base de datos: " . $e->getMessage(), 500);
+        }
+    }
+
+
 
 
 
