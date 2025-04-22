@@ -8,10 +8,10 @@ class ProjectResponseDto
     public $description;
     public $deliveryDate;
     public $userId;
-    public $filePath;
+    public ? string $filePath;
 
 
-    public function __construct($id, $name, $startDate, $description,$deliveryDate, $userId,$filePath)
+    public function __construct($id, $name, $startDate, $description,$deliveryDate, $userId,$filePath= null)
     {
         $this->id = $id;
         $this->name = $name;
@@ -31,7 +31,7 @@ class ProjectResponseDto
             'description' => $this->description,
             'deliveryDate' => $this->deliveryDate,
             'userId' => $this->userId,
-            'file_path'=>$this->filePath
+            'file_path'=>$this->filePath ? $this->filePath : "no hay archivos"
         ];
     }
 

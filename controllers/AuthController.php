@@ -2,6 +2,7 @@
 require_once  __DIR__ . '/../Dtos/RequestDto/LoginRequestDto.php';
 require_once  __DIR__ . '/../Dtos/ResponseDto/TokenResponseDto.php';
 require_once  __DIR__ . '/../Service/AuthServiceImpl.php';
+require_once __DIR__ . '/../Service/JwtService.php';
 class AuthController extends Controller
 {
     private $authService;
@@ -11,7 +12,7 @@ class AuthController extends Controller
         $this->authService = new AuthServiceImpl();
     }
 
-    public function login() : TokenResponseDto{
+    public function login() : void{
 
 
         try{
@@ -20,17 +21,19 @@ class AuthController extends Controller
             if(!isset( $data['email']) || !isset($data['password']))
             {
                 throw new Exception("datos incompletos",400);
-            }
-            $loginRequest = new LoginRequestDto($data['email'], $data['password']);
 
-            $response = $this->authService->login($loginRequest);
-//            var_dump($response);
-            $this->jsonSuccess($response);
+            }
+            $loginRequest = new LoginRequestDto(
+                $data['email'],
+                $data['password']);
+            $user = $this->authService->login($loginRequest);
+
+            $this->jsonSuccess($user);
             exit();
 
         }catch (Exception $e){
            $this->jsonError($e->getMessage(),$e->getCode());
-            return new TokenResponseDto("error",["message",$e->getMessage() ]);
+
         }
     }
 }

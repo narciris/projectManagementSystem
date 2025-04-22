@@ -45,6 +45,11 @@ class UserController extends Controller
     public function show(): void
     {
         try {
+            $userAuthenticate = AuthMiddleware::authenticate();
+            if(!$userAuthenticate)
+            {
+                throw new Exception("usuario no autenticado");
+            }
             $id = $_GET['id'] ?? null;
 
             if (!$id) {
@@ -60,7 +65,14 @@ class UserController extends Controller
 
 
     public function register()
+
     {
+        $userAuthenticate = AuthMiddleware::authenticate();
+        if(!$userAuthenticate)
+        {
+            throw new Exception("usuario no autenticado");
+        }
+
         $data = json_decode(file_get_contents("php://input"), true);
         $dto = new RegisterRequestDto($data['email'],$data['password'],$data['name']);
 
@@ -86,6 +98,12 @@ class UserController extends Controller
 
     public function delete($id) {
         try {
+            $userAuthenticate = AuthMiddleware::authenticate();
+            if(!$userAuthenticate)
+            {
+                throw new Exception("usuario no autenticado");
+            }
+
             $result = $this->userService->deleteUser($id);
 
             $this->jsonSuccess([

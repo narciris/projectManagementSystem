@@ -3,30 +3,15 @@
 class TokenResponseDto
 {
     public string $token;
-    public  array $user;
+    public   $user;
 
 
-    public function __construct(string $token,  array $user)
+    public function __construct(string $token,   $user)
     {
         $this->token = $token;
         $this->user = $user;
     }
 
-    /**
-     * @return string
-     */
-    public function getToken(): string
-    {
-        return $this->token;
-    }
-
-    /**
-     * @return array
-     */
-    public function getUser(): array
-    {
-        return $this->user;
-    }
 
     public function toArray():array
     {

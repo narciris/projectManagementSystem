@@ -23,8 +23,13 @@ class AuthServiceImpl
         if (!$user || !password_verify($requestDto->password, $user['password'])) {
             throw new Exception("Credenciales inválidas", 401);
         }
+        $tokenService = new JwtService();
+        $token = $tokenService->generateToken(
+            [
+                'email' => $user['email'], 'id' => $user['id']]
+        );
 
-        $token = "token de prueba";
+
         return new TokenResponseDto($token, [
             'id' => $user['id'],
                 'email' => $user['email'],

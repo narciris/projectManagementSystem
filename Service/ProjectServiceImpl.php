@@ -39,7 +39,8 @@ class ProjectServiceImpl
                 $project['start_date'],
                 $project['description'],
                 $project['delivery_date'],
-                $project['user_id']
+                $project['user_id'],
+                $project['file_path']
             );
         }
         return $allProject;
