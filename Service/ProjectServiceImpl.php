@@ -96,13 +96,17 @@ class ProjectServiceImpl
     }
 
 
-    public function updateProject($projectId, PRojectRequestDto $requestDto) : ProjectResponseDto
+    public function updateProject(PRojectRequestDto $requestDto) : ProjectResponseDto
     {
         $userDat = AuthMiddleware::authenticate();
         if(!$userDat){
             throw new Exception("usuario no autenticado",401);
         }
 
+        if (!isset($_GET['project_id'  ])) {
+            throw new Exception("id no proporcionado", 400);
+        }
+        $projectId = $_GET['project_id'];
 
 
         $project = $this->model->findById($projectId);
@@ -157,6 +161,32 @@ class ProjectServiceImpl
         }
     }
 
+  public function deleteProject()
+  {
+      $userDat = AuthMiddleware::authenticate();
+      if(!$userDat){
+          throw new Exception("usuario no autenticado",401);
+      }
 
+      if (isset($_GET['project_id'])) {
+          $projectId = $_GET['project_id'];
+      }
+
+      if (!$projectId) {
+          throw new Exception("id no proporcionado", 400);
+      }
+
+       $deletedPro = $this->model->findById($projectId);
+      if(!$deletedPro){
+          throw new Exception("el proyecto no existe");
+      }
+
+         $exist = $this->model->delete([$projectId]);
+         if(!$exist){
+             throw new Exception("Error al eliminar",404);
+         }
+   return $deletedPro;
+
+       }
 
 }

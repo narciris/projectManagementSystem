@@ -87,17 +87,12 @@ public function create()
     }
 }
 
-public function update($projectId)
+public function update()
 
 
 {
 
 
-    if (!isset($_GET['project_id'  ])) {
-        $this->jsonError("id no proporcionado");
-
-    }
-    $projectId = $_GET['project_id'];
 
     $filePath = null;
     if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
@@ -122,10 +117,21 @@ public function update($projectId)
     );
 
     try{
-        $result = $this->projectService->updateProject($projectId,$requestDto);
+        $result = $this->projectService->updateProject($requestDto);
         $this->jsonSuccess($result);
     }catch (Exception $e) {
         $this->jsonError($e->getMessage(), $e->getCode());
     }
 }
+ public function delete()
+ {
+     try{
+
+        $deleted=  $this->projectService->deleteProject();
+     $this->jsonSuccess($deleted);
+
+ }catch (Exception $e){
+         $this->jsonError($e->getMessage(), $e->getCode());
+     }
+ }
 }
