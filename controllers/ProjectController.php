@@ -89,6 +89,33 @@ public function create()
 
 public function update(ProjectRequestDto  $requestDto,$projectId)
 {
-    //in process
+    $filePath = null;
+    if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+        $fileService = new FileService();
+        try {
+            $filePath = $fileService->uploadFile(
+                $_FILES['file'],
+                'uploads/projects'
+            );
+        } catch (Exception $e) {
+            $this->jsonError($e->getMessage(), $e->getCode());
+            return;
+        }
+    }
+    $requestDto = new ProjectRequestDto(
+        isset($_POST['name'] ) ? $_POST['name'] : null,
+       isset( $_POST['description']) ? $_POST['description'] : null,
+        isset($_POST['start_date']) ? $_POST['start_date'] : null,
+        isset($_POST['delivery_date']) ? $_POST['delivery_date'] : null,
+         null,
+        $filePath
+    );
+
+    try{
+        $result = $this->projectService->updateProject($requestDto,$projectId);
+        $this->jsonSuccess($result);
+    }catch (Exception $e) {
+        $this->jsonError($e->getMessage(), $e->getCode());
+    }
 }
 }

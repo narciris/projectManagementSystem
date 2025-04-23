@@ -89,7 +89,7 @@ class ProjectServiceImpl
         $requestDto->description,
         $requestDto->startDate,
         $requestDto->deliveryDate,
-        $requestDto->$authenticateUserId,
+            $authenticateUserId,
         $requestDto->filePath
         );
 
@@ -102,6 +102,7 @@ class ProjectServiceImpl
         if(!$userDat){
             throw new Exception("usuario no autenticado",401);
         }
+
 
         $project = $this->model->findById($projectId);
         if(!$project){
@@ -136,7 +137,7 @@ class ProjectServiceImpl
             $project->description,
             $project->start_date,
             $project->delivery_date,
-            $project->user_id,
+            $userDat['id'],
             $project->file_path
         );
 
