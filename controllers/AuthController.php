@@ -36,4 +36,30 @@ class AuthController extends Controller
 
         }
     }
+
+    public function register()
+
+    {
+
+        $data = json_decode(file_get_contents("php://input"), true);
+        $dto = new RegisterRequestDto($data['email'],$data['password'],$data['name']);
+
+        try{
+            $userModel = $this->loadModel('User');
+//            var_dump($userModel); exit;
+
+            $result = $userModel->registerUser($dto);
+
+            header('Content-Type: application/json');
+            if($result instanceof  UserResponseDto){
+                $this->jsonSuccess($result,201);
+            } else{
+                $this->jsonError($result);
+            }
+        }catch (Exception $e){
+            $this->jsonError($e->getMessage(),400);
+        }
+
+
+    }
 }

@@ -18,14 +18,20 @@ class ProjectServiceImpl
         $this->modelUser = new User();
     }
 
-    public function getByUserId($userId) : array
+    public function getByUserId() : array
     {
+        $userDat = AuthMiddleware::authenticate();
+        if(!$userDat){
+            throw new Exception("usuario no autenticado",401);
+        }
+        $authenticateUserId = $userDat['id'];
+
         //validar que el usuario existe
-         $this->modelUser->findUserById($userId);
+         $this->modelUser->findUserById($authenticateUserId);
 
         //validar si hay proyectos del usuario
 
-        $projects = $this->model->findAllByUserId($userId);
+        $projects = $this->model->findAllByUserId($authenticateUserId);
         if(!$projects){
             throw new  Exception("No se encontraron proyectos para este usuario", 404);
 
@@ -52,38 +58,100 @@ class ProjectServiceImpl
     **/
     public function create(ProjectRequestDto $requestDto) : ProjectResponseDto
     {
+        $userDat = AuthMiddleware::authenticate();
+        if(!$userDat){
+            throw new Exception("usuario no autenticado",401);
+        }
+        $authenticateUserId = $userDat['id'];
+
         //buscar por nombre
         $nameProject = $this->model->findByOne('name', $requestDto->name);
-        if($nameProject){
-            throw new Exception("El nombre del proyecto no existe", 400);
+        if(!empty($nameProject)){
+            throw new Exception("El nombre del proyecto ya existe", 400);
         }
 
-        //validar si el usuario esta autenticado
-        //validar si el usuario tiene permisos para crear un proyecto
-
-        $userId = $requestDto->user_id;
-        $this->modelUser->findUserById($userId);
+        $this->modelUser->findUserById($authenticateUserId);
 
         $data = [
             'name' => $requestDto->name,
             'description' => $requestDto->description,
             'start_date' => $requestDto->startDate,
             'delivery_date' => $requestDto->deliveryDate,
-            'user_id' => $userId,
+            'user_id' => $authenticateUserId,
             'file_path' => $requestDto->filePath
 
         ];
-
+//validaciones pendientes:
+        //la fecha de inicio no puede ser mayor  a la fecha de entrega
         $insertIdSave = $this->model->save($data);
         return new  ProjectResponseDto($insertIdSave,
         $requestDto->name,
         $requestDto->description,
         $requestDto->startDate,
         $requestDto->deliveryDate,
-        $requestDto->user_id,
+        $requestDto->$authenticateUserId,
         $requestDto->filePath
         );
 
+    }
+
+
+    public function updateProject($projectId, PRojectRequestDto $requestDto) : ProjectResponseDto
+    {
+        $userDat = AuthMiddleware::authenticate();
+        if(!$userDat){
+            throw new Exception("usuario no autenticado",401);
+        }
+
+        $project = $this->model->findById($projectId);
+        if(!$project){
+            throw new Exception("proyecto no encontrado");
+        }
+
+
+        if(isset($requestDto->name) && trim($requestDto->name) != ''){
+            $this->validateName($requestDto->name,$projectId);
+            $project->name = $requestDto->name;
+        }
+        if(isset($requestDto->description) && trim($requestDto->description) != ''){
+            $project->description = $requestDto->description;
+        }
+        if(isset($requestDto->startDate) && trim($requestDto->startDate) != ''){
+            $project->start_date = $requestDto->startDate;
+        }
+
+        if(isset($requestDto->deliveryDate) && trim($requestDto->deliveryDate) != ''){
+            $project->delivery_date = $requestDto->deliveryDate;
+        }
+
+        if(isset($requestDto->filePath) && trim($requestDto->filePath) != ''){
+            $project->file_path = $requestDto->filePath;
+        }
+
+        $this->model->save($project);
+
+        return new ProjectResponseDto(
+            $project->id,
+            $project->name,
+            $project->description,
+            $project->start_date,
+            $project->delivery_date,
+            $project->user_id,
+            $project->file_path
+        );
+
+
+    }
+
+    public function validateName($name, $projectId)
+    {
+        if(empty($name)){
+            throw new Exception("el nombre no puede estar vacio");
+        }
+        $existProject = $this->model->findByOne("name", $name);
+        if($existProject && $existProject->id != $projectId){
+            throw new Exception("el nombre ya existe");
+        }
     }
 
 

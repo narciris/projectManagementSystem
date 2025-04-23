@@ -17,15 +17,15 @@ class ProjectController extends Controller
 
 
 
-    public function getByUser($id)
+    public function getByUser()
     {
         try {
-            $userAuthenticate = AuthMiddleware::authenticate();
-            if(!$userAuthenticate)
-            {
-                throw new Exception("usuario no autenticado");
-            }
-            $projects = $this->projectService->getByUserId($id);
+//            $userAuthenticate = AuthMiddleware::authenticate();
+//            if(!$userAuthenticate)
+//            {
+//                throw new Exception("usuario no autenticado",401);
+//            }
+            $projects = $this->projectService->getByUserId();
 
 
             $response = [];
@@ -49,7 +49,8 @@ public function create()
     $userAuthenticate = AuthMiddleware::authenticate();
     if(!$userAuthenticate)
     {
-        throw new Exception("usuario no autenticado");
+        throw new Exception("usuario no autenticado",401);
+
     }
     $filePath = null;
     if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
@@ -86,5 +87,8 @@ public function create()
     }
 }
 
-
+public function update(ProjectRequestDto  $requestDto,$projectId)
+{
+    //in process
+}
 }

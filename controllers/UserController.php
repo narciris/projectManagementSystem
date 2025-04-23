@@ -3,6 +3,7 @@
 require_once  __DIR__ . '/../Dtos/RegisterRequestDto.php';
 require_once __DIR__ . '/../Dtos/ResponseDto/UserResponseDto.php';
 require_once  __DIR__ . '/../Service/UserServiceImpl.php';
+require_once  __DIR__ . '/../core/AuthMiddleware.php';
 class UserController extends Controller
 {
 
@@ -64,36 +65,7 @@ class UserController extends Controller
     }
 
 
-    public function register()
 
-    {
-        $userAuthenticate = AuthMiddleware::authenticate();
-        if(!$userAuthenticate)
-        {
-            throw new Exception("usuario no autenticado");
-        }
-
-        $data = json_decode(file_get_contents("php://input"), true);
-        $dto = new RegisterRequestDto($data['email'],$data['password'],$data['name']);
-
-        try{
-            $userModel = $this->loadModel('User');
-//            var_dump($userModel); exit;
-
-            $result = $userModel->registerUser($dto);
-
-            header('Content-Type: application/json');
-            if($result instanceof  UserResponseDto){
-                $this->jsonSuccess($result);
-            } else{
-                $this->jsonError($result);
-            }
-        }catch (Exception $e){
-            $this->jsonError($e->getMessage(),400);
-        }
-
-
-    }
 
 
     public function delete($id) {
