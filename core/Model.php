@@ -133,15 +133,20 @@
 
     }
 
-    public function update($data, $id)
+    public function update(array $data)
     {
+        if(!isset($data['id'])){
+            throw new Exception("falta el id",400);
+        }
         try {
             $fields = '';
             $values = [];
 
-            foreach ($data as $key => $value){
-                $fields .= "$key = :$key, ";
-                $values["$key"] = $value;
+            foreach ($data as $key => $value) {
+                if ($key != 'id') {
+                    $fields .= "$key = :$key, ";
+                    $values["$key"] = $value;
+                }
             }
 
             $fields = rtrim($fields, ', ');
@@ -149,11 +154,10 @@
             $sql = "UPDATE {$this->model} SET $fields WHERE id = :id";
             $stmt = $this->db->prepare($sql);
 
-            foreach ($values as $key => $value){
-                $stmt->bindValue("$key", $value);
+            foreach ($values as $key => $value) {
+                $stmt->bindValue(":$key", $value);
             }
-
-            $stmt->bindValue(':id',$id);
+            $stmt->bindValue(':id',$data['id']);
 
             $stmt->execute();
             return "registro actualizado";
@@ -162,4 +166,5 @@
             return $e->getMessage();
         }
     }
+
 }

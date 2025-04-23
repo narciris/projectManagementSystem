@@ -104,6 +104,7 @@ class ProjectServiceImpl
         }
 
 
+
         $project = $this->model->findById($projectId);
         if(!$project){
             throw new Exception("proyecto no encontrado");
@@ -112,33 +113,34 @@ class ProjectServiceImpl
 
         if(isset($requestDto->name) && trim($requestDto->name) != ''){
             $this->validateName($requestDto->name,$projectId);
-            $project->name = $requestDto->name;
-        }
-        if(isset($requestDto->description) && trim($requestDto->description) != ''){
-            $project->description = $requestDto->description;
+            $project['name']= $requestDto->name;
         }
         if(isset($requestDto->startDate) && trim($requestDto->startDate) != ''){
-            $project->start_date = $requestDto->startDate;
+            $project['start_date'] = $requestDto->startDate;
+        }
+        if(isset($requestDto->description) && trim($requestDto->description) != ''){
+            $project['description'] = $requestDto->description;
         }
 
+
         if(isset($requestDto->deliveryDate) && trim($requestDto->deliveryDate) != ''){
-            $project->delivery_date = $requestDto->deliveryDate;
+            $project['delivery_date'] = $requestDto->deliveryDate;
         }
 
         if(isset($requestDto->filePath) && trim($requestDto->filePath) != ''){
-            $project->file_path = $requestDto->filePath;
+            $project['file_path'] = $requestDto->filePath;
         }
 
-        $this->model->save($project);
+        $this->model->update($project);
 
         return new ProjectResponseDto(
-            $project->id,
-            $project->name,
-            $project->description,
-            $project->start_date,
-            $project->delivery_date,
+            $project['id'],
+            $project['name'],
+            $project['start_date'],
+            $project['description'],
+            $project['delivery_date'],
             $userDat['id'],
-            $project->file_path
+            $project['file_path']
         );
 
 

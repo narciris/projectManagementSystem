@@ -7,7 +7,12 @@ class ProjectRequestDto
     public  string $startDate;
     public  string $deliveryDate;
     public ?string $filePath;
-    public function __construct(string $name, string $description, string $startDate, string $deliveryDate, string $filePath)
+    public function __construct(
+        string $name,
+        string $description,
+        string $startDate,
+        string $deliveryDate,
+        ? string $filePath)
     {
         $this->name = $name;
         $this->description = $description;
